@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: mediplus
-        image: 503640389215.dkr.ecr.eu-north-1.amazonaws.com/mediplus:{{IMAGE_TAG}}
+        image: 503640389215.dkr.ecr.eu-north-1.amazonaws.com/mediplus:5
         imagePullPolicy: Always
         ports:
         - containerPort: 80
