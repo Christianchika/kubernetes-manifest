@@ -16,9 +16,11 @@ spec:
     spec:
       containers:
       - name: mediplus
-        image: 503640389215.dkr.ecr.eu-north-1.amazonaws.com/mediplus:5
+        image: 503640389215.dkr.ecr.eu-north-1.amazonaws.com/mediplus:{{IMAGE_TAG}}
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
+
 
 ---
 apiVersion: v1
@@ -33,6 +35,7 @@ spec:
       port: 80
       targetPort: 80
   type: ClusterIP
+
 
   ---
 
@@ -59,6 +62,7 @@ spec:
             name: mediplus-service
             port:
               number: 80
+
 ---
 
 apiVersion: argoproj.io/v1alpha1
@@ -71,7 +75,7 @@ spec:
   source:
     repoURL: https://github.com/Christianchika/Mediplus.git
     targetRevision: HEAD
-    path: k8s
+    path: kubernetes-manifest
   destination:
     server: https://kubernetes.default.svc
     namespace: default
