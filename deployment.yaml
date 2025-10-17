@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mediplus-deployment
+  labels:
+    app: mediplus
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mediplus
+  template:
+    metadata:
+      labels:
+        app: mediplus
+    spec:
+      containers:
+      - name: mediplus
+        image: 503640389215.dkr.ecr.eu-north-1.amazonaws.com/mediplus:latest
+        ports:
+        - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mediplus-service
+spec:
+  selector:
+    app: mediplus
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP
+
+  ---
+
+apiVersion: networking.kubernetes-manifest.io/v1
+kind: Ingress
+metadata:
+  name: mediplus-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  tls:
+  - hosts:
+      - mypodsix.online
+    secretName: mediplus-tls
+  rules:
+  - host: mypodsix.online
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: mediplus-service
+            port:
+              number: 80
+---
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mediplus
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Christianchika/Mediplus.git
+    targetRevision: HEAD
+    path: k8s
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+
+
+
