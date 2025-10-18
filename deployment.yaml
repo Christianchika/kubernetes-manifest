@@ -1,3 +1,6 @@
+# -------------------------------
+# Deployment
+# -------------------------------
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,13 +19,16 @@ spec:
     spec:
       containers:
       - name: mediplus
-        image: 503640389215.dkr.ecr.eu-north-1.amazonaws.com/mediplus:6
+        image: 503640389215.dkr.ecr.eu-north-1.amazonaws.com/mediplus:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 80
 
-
 ---
+
+# -------------------------------
+# Service
+# -------------------------------
 apiVersion: v1
 kind: Service
 metadata:
@@ -36,10 +42,12 @@ spec:
       targetPort: 80
   type: ClusterIP
 
+---
 
-  ---
-
-apiVersion: networking.kubernetes-manifest.io/v1
+# -------------------------------
+# Ingress with TLS via Cert-Manager
+# -------------------------------
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: mediplus-ingress
@@ -65,6 +73,9 @@ spec:
 
 ---
 
+# -------------------------------
+# Argo CD Application
+# -------------------------------
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -82,6 +93,8 @@ spec:
   syncPolicy:
     automated:
       prune: true
+      selfHeal: true
+
       selfHeal: true
 
 
