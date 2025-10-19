@@ -17,6 +17,9 @@ spec:
       labels:
         app: mediplus
     spec:
+      tolerations:
+        - key: "CriticalAddonsOnly"
+        operator: "Exists"
       containers:
       - name: mediplus
         image: 338970088142.dkr.ecr.eu-north-1.amazonaws.com/mediplus:14
