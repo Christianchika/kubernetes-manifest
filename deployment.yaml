@@ -84,9 +84,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/Christianchika/Mediplus.git
+    repoURL: https://github.com/Christianchika/kubernetes-manifest.git
     targetRevision: HEAD
-    path: kubernetes-manifest
+    path: .
   destination:
     server: https://kubernetes.default.svc
     namespace: default
@@ -95,7 +95,8 @@ spec:
       prune: true
       selfHeal: true
 
-      selfHeal: true
+
+
 
 
 
