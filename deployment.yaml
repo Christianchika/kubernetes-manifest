@@ -19,13 +19,14 @@ spec:
     spec:
       tolerations:
         - key: "CriticalAddonsOnly"
-        operator: "Exists"
+          operator: "Exists"
       containers:
-      - name: mediplus
-        image: 338970088142.dkr.ecr.eu-north-1.amazonaws.com/mediplus:14
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 80
+        - name: mediplus
+          image: 338970088142.dkr.ecr.eu-north-1.amazonaws.com/mediplus:14
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+
 
 ---
 
