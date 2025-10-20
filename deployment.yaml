@@ -22,7 +22,7 @@ spec:
           operator: "Exists"
       containers:
         - name: mediplus
-          image: 503640389215.dkr.ecr.eu-north-1.amazonaws.com/mediplus
+          image: 503640389215.dkr.ecr.eu-north-1.amazonaws.com/mediplus:15
           imagePullPolicy: Always
           ports:
             - containerPort: 80
