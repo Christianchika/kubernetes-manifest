@@ -1,4 +1,3 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -14,10 +13,8 @@ spec:
         app: mediplus
     spec:
       containers:
-      - name: mediplus
-        image: christianchika/mediplus:latest
-        ports:
-        - containerPort: 80
+        - name: mediplus
+          image: your-docker-image:latest
 ---
 apiVersion: v1
 kind: Service
@@ -28,7 +25,8 @@ spec:
   selector:
     app: mediplus
   ports:
-    - port: 80
+    - protocol: TCP
+      port: 80
       targetPort: 80
 ---
 apiVersion: networking.k8s.io/v1
@@ -36,24 +34,23 @@ kind: Ingress
 metadata:
   name: mediplus-ingress
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
-  ingressClassName: traefik
-  tls:
-  - hosts:
-    - DOMAIN_PLACEHOLDER
-    secretName: mediplus-tls
   rules:
-  - host: DOMAIN_PLACEHOLDER
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: mediplus-service
-            port:
-              number: 80
+    - host: DOMAIN_PLACEHOLDER
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: mediplus-service
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - DOMAIN_PLACEHOLDER
+      secretName: mediplus-tls
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -64,10 +61,10 @@ spec:
   project: default
   source:
     repoURL: "https://github.com/Christianchika/kubernetes-manifest.git"
-    targetRevision: HEAD
-    path: "."
+    path: .
+    targetRevision: main
   destination:
-    server: "https://kubernetes.default.svc"
+    server: https://kubernetes.default.svc
     namespace: default
   syncPolicy:
     automated:
