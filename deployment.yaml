@@ -1,12 +1,8 @@
-# -------------------------------
-# Deployment
-# -------------------------------
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mediplus-deployment
-  labels:
-    app: mediplus
+  name: mediplus
 spec:
   replicas: 2
   selector:
@@ -17,91 +13,67 @@ spec:
       labels:
         app: mediplus
     spec:
-      tolerations:
-        - key: "CriticalAddonsOnly"
-          operator: "Exists"
       containers:
-        - name: mediplus
-          image: 503640389215.dkr.ecr.eu-north-1.amazonaws.com/mediplus:15
-          imagePullPolicy: Always
-          ports:
-            - containerPort: 80
-      imagePullSecrets:
-        - name: mediplus-ecr-secret
-
-
-
+      - name: mediplus
+        image: christianchika/mediplus:latest
+        ports:
+        - containerPort: 80
 ---
-
-# -------------------------------
-# Service
-# -------------------------------
 apiVersion: v1
 kind: Service
 metadata:
   name: mediplus-service
 spec:
+  type: ClusterIP
   selector:
     app: mediplus
   ports:
-    - protocol: TCP
-      port: 80
+    - port: 80
       targetPort: 80
-  type: ClusterIP
-
 ---
-
-# -------------------------------
-# Ingress with TLS via Cert-Manager
-# -------------------------------
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: mediplus-ingress
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   tls:
-    - hosts:
-        - mypodsix.online
-      secretName: mediplus-tls
+  - hosts:
+    - DOMAIN_PLACEHOLDER
+    secretName: mediplus-tls
   rules:
-    - host: mypodsix.online
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: mediplus-service
-                port:
-                  number: 80
-
-
+  - host: DOMAIN_PLACEHOLDER
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: mediplus-service
+            port:
+              number: 80
 ---
-
-# -------------------------------
-# Argo CD Application
-# -------------------------------
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: mediplus
+  name: mediplus-app
   namespace: argocd
 spec:
   project: default
   source:
-    repoURL: https://github.com/Christianchika/kubernetes-manifest.git
+    repoURL: "https://github.com/Christianchika/kubernetes-manifest.git"
     targetRevision: HEAD
-    path: .
+    path: "."
   destination:
-    server: https://kubernetes.default.svc
+    server: "https://kubernetes.default.svc"
     namespace: default
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
+
 
 
 
